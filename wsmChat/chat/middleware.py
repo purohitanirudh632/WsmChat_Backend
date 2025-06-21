@@ -16,6 +16,7 @@ def get_user(validated_token):
         return get_user_model().objects.get(id = user_id)
     except:
         return AnonymousUser()
+        
 
 class JWTAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):

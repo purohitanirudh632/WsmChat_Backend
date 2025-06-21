@@ -5,6 +5,13 @@ from rest_framework.exceptions import ValidationError
 from accounts.serializers import RegisterSerializer
 from django.db.models import Count
 
+class GetUsers(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ["name" , "email"]
+        
+
+
 class MessageSerializer(serializers.ModelSerializer):
     sender = serializers.StringRelatedField(read_only=True)
 
@@ -14,17 +21,18 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class ChatSerializer(serializers.ModelSerializer):
-    participants = serializers.ListField(child = serializers.EmailField(), write_only = True)
-    messages = serializers.StringRelatedField(many=True,read_only =True)
-    participants_info = RegisterSerializer(many=True,read_only =True)
+    # participants = serializers.ListField(child = serializers.EmailField(), write_only = True)
+    # messages = serializers.StringRelatedField(many=True,read_only =True)
+    participants = RegisterSerializer(many=True, read_only=True)
+    participants_create = serializers.ListField(child=serializers.EmailField(), write_only=True)
     
     class Meta:
         model = chat
-        fields = ['id','participants','participants_info','created_at','messages']
-        read_only_fields = ['id','created_at','participants_info','messages']
+        fields = ['id','participants','created_at', 'participants_create']
+        read_only_fields = ['id','created_at']
 
     def create(self,validated_data):
-        emails =validated_data.pop('participants')
+        emails =validated_data.pop('participants_create')
         print(emails)
         request_user = self.context['request'].user
         users = list(CustomUser.objects.filter(email__in =emails))
@@ -37,7 +45,8 @@ class ChatSerializer(serializers.ModelSerializer):
             raise ValidationError({
                 'participants': [f"The following users do not exist: {', '.join(missing_emails)}"]
             })
-
+        
+        
         if request_user not in users:
             users.append(request_user)
 

@@ -3,11 +3,21 @@ from rest_framework.permissions import IsAuthenticated ,AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import generics
-from .serlializers import ChatSerializer , MessageSerializer
+from .serlializers import ChatSerializer , MessageSerializer , GetUsers
 from .models import chat,messages
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.parsers import MultiPartParser , FormParser
 # from rest_framework import serializers
+from rest_framework.decorators import api_view
+from accounts.models import CustomUser
+
+class Get_User_Serializer(generics.ListAPIView):
+    serializer_class = GetUsers
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return CustomUser.objects.all()
+
 
 
 class ChatListCreateView(generics.ListCreateAPIView):
