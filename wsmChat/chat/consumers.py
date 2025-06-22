@@ -1,7 +1,7 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer ,WebsocketConsumer
-from .models import chat ,messages
+# from .models import chat ,messages
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -57,14 +57,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'sender': event['sender'],
             'timestamp': event['timestamp']
         }))
-
-
-
-
-
-
-
-
 
 
 # class ChatConsumer(AsyncWebsocketConsumer):

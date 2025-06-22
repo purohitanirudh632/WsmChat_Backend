@@ -26,6 +26,7 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
     name = models.CharField(max_length=100)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    avatar = models.ImageField(upload_to='media/', null=True, blank=True, default='/media/chat_media/15/avatar.png')
 
     objects = CustomUserManager()
     USERNAME_FIELD = 'email'
@@ -33,3 +34,12 @@ class CustomUser(AbstractBaseUser,PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+# class Profile(models.Model):
+#     user = models.ForeignKey(CustomUser, )
+#     first_name = models.CharField(max_length=230)
+#     last_name = models.CharField(max_length=230)
+#     description = models.TextField()
+#     contact_no = models.IntegerField(max_length=10)
+
