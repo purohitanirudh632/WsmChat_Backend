@@ -14,24 +14,26 @@ def get_user(validated_token):
     try:
         user_id = validated_token['user_id']
         return get_user_model().objects.get(id = user_id)
-    except:
+    except get_user_model().DoesNotExist:
+        print("ye user tho  hai hi nahi database me ..............................................")
         return AnonymousUser()
         
 
 class JWTAuthMiddleware(BaseMiddleware):
     async def __call__(self, scope, receive, send):
-        query_string  =parse_qs(scope["query_string"].decode())
+        query_string = parse_qs(scope["query_string"].decode())
         token = query_string.get("token")
         if token:
             try:
                 validated_token = UntypedToken(token[0])
                 scope["user"] = await get_user(validated_token)
-                # print(scope["user"],'/n/n/n/n/n/n/n')
+                print("this is a valid token")
             except (InvalidToken , TokenError) as e:
-                # print("Invalid_token" , '/n/n/n/n/n/n/n/n')
                 scope["user"] = AnonymousUser()
+                print("this is a invalid token")
         else:
             scope["user"] = AnonymousUser()
+            print("token does not exists")
         close_old_connections()
 
         return await super().__call__(scope, receive, send)

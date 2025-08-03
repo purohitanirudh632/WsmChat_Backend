@@ -1,7 +1,7 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import AsyncWebsocketConsumer ,WebsocketConsumer
-from .models import chat ,messages
+from .models import Chat ,Messages ,Message_type
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
@@ -28,12 +28,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(user,'\n\n\n\n')
         if not user.is_authenticated:
             await self.send(json.dumps({
-                "error"  : "Authenticate user"
+                "error"  : "Authenticate ussser user"
             }))
             return
         
         text_data_json = json.loads(text_data)
         text = text_data_json.get('text')
+        message_type_str = text_data_json.get('type','text')
 
         if not text:
             await self.send(json.dumps({
@@ -41,23 +42,43 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }))
             return
         
-        chat_instance =  await chat.objects.aget(id = self.chat_id)
-        message = await messages.objects.acreate(chat = chat_instance , sender = user , text = text)
+        try:         
+         chat_instance =  await Chat.objects.aget(id = self.chat_id)
+        except Chat.DoesNotExist:
+            await self.send(json.dumps({
+                "error":"Chat not found"
+            })) 
+            return
+        try:
+            message_type = await Message_type.objects.aget( type = message_type_str)
+        except Message_type.DoesNotExist:
+            await self.send(json.dumps({
+                "error":f"Message type '{message_type_str}'Does Not exists"
+            }))
+            return
+
+        message = await Messages.objects.acreate(chat = chat_instance,user = user,content = text,type = message_type)    
 
         # Send message to room group
         await self.channel_layer.group_send(
-            self.room_group_name, {"type": "chat_message", "text": message.text ,"sender":user.email , "timestamp":str(message.timestamp)}
+            self.room_group_name,
+            {
+                "type": "chat_message",
+                "text": message.content,
+                "sender": user.email,
+                "timestamp": str(message.sent_at),
+                
+            }
         )
 
     # Receive message from room group
-    async def chat_message(self, event):
-        
-        await self.send(json.dumps({
-            'text': event['text'],
-            'sender': event['sender'],
-            'timestamp': event['timestamp']
+    async def chat_message(self, event):       
+        await self.send(text_data=json.dumps({
+            "text": event["text"],
+            "sender": event["sender"],
+            "timestamp": event["timestamp"],
+            
         }))
-
 
 
 
