@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
-from django.core.asgi import get_asgi_application
+from environ import Env
+env = Env()
+Env.read_env()
+
+# from django.core.asgi import get_asgi_application
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,10 +26,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-ab5$b)!hld#e@(#e=(bhnt2-12a-an4l@8&m*-d+03sm4ids%p'
+SECRET_KEY =env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -45,7 +49,9 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'accounts',
     'channels',
-    'corsheaders'
+    'corsheaders',
+    'django_filters',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -84,17 +90,13 @@ CORS_ALLOW_ALL_ORIGINS = True
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'chatdb',
-    #     'USER': 'chatuser',
-    #     'PASSWORD':'1234',
-    #     'HOST':'localhost',
-    #     'PORT':'5432',
-    # }
-      "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": "mydatabase",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'chatdb',
+        'USER': 'chatuser',
+        'PASSWORD':'1234',
+        'HOST':'localhost',
+        'PORT':'5432',
     }
 }
 
@@ -146,11 +148,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 ASGI_APPLICATION = "wsmChat.asgi.application"
 
+REDIS_URL = os.environ.get("REDIS_URL")
+
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("127.0.0.1", 6379)],
+            "hosts": [REDIS_URL],
         },
     },
 }
