@@ -1,15 +1,8 @@
 import os
-import sys
-
-# add your project directory to the sys.path
-project_home = '/home/anirudhPoo/connect'
-if project_home not in sys.path:
-    sys.path.insert(0, project_home)
-
-# set environment variable to tell django where your settings.py is
-os.environ['DJANGO_SETTINGS_MODULE'] = 'connect.settings'
-
-
-# serve django via WSGI
 from django.core.wsgi import get_wsgi_application
+
+# Set the default Django settings module for the 'wsmChat' project
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wsmChat.settings')
+
+# Get WSGI application
 application = get_wsgi_application()
