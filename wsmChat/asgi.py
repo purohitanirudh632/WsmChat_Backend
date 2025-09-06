@@ -13,6 +13,7 @@ from channels.auth import AuthMiddlewareStack
 from chat.middleware import JWTAuthMiddleware
 from django.core.asgi import get_asgi_application
 import chat.routing
+
 # from channels.security.websocket import AllowedHostsOriginValidator
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wsmChat.settings')
