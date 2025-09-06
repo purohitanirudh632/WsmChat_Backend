@@ -1,1 +1,1 @@
-web: gunicorn wsmChat.wsgi:application --bind 0.0.0.0:$PORT
+web: daphne wsmChat.wsgi:application--port $PORT --bind 0.0.0.0
