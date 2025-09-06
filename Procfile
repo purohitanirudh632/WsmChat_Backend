@@ -1,1 +1,1 @@
-web: daphne wsmChat.wsgi:application--port $PORT --bind 0.0.0.0
+web: daphne wsmChat.asgi:application --port $PORT --bind 0.0.0.0
