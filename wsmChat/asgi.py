@@ -8,6 +8,9 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
 import os
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wsmChat.settings')
+import django
+django.setup()
 from channels.routing import ProtocolTypeRouter,URLRouter
 from channels.auth import AuthMiddlewareStack
 from chat.middleware import JWTAuthMiddleware
@@ -15,7 +18,6 @@ from django.core.asgi import get_asgi_application
 import chat.routing
 # from channels.security.websocket import AllowedHostsOriginValidator
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'wsmChat.settings')
 
 application = ProtocolTypeRouter({
     "http":get_asgi_application(),
